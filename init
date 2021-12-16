@@ -28,6 +28,7 @@ conn myvpn
   type=transport
   leftprotoport=17/1701
   rightprotoport=17/1701
+  right=77.37.132.73
   dpdaction=restart
 EOF
 
