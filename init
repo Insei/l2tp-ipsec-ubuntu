@@ -27,13 +27,13 @@ conn myvpn
   type=transport
   leftprotoport=17/1701
   rightprotoport=17/1701
-  right=$VPN_SERVER_IP
+  right=77.37.132.73
   auto=route
   dpdaction=restart
 EOF
 
 cat > /etc/ipsec.secrets <<EOF
- : PSK $VPN_IPSEC_PSK
+ : PSK OjT7%2fSnh
 EOF
 
 chmod 600 /etc/ipsec.secrets
@@ -62,8 +62,8 @@ mtu 1450
 mru 1450
 noipdefault
 connect-delay 5000
-name $VPN_USER
-password $VPN_PASSWORD
+name ci_cd_l2tp
+password Hu298UHs91Lus8i8Sh
 EOF
 
 chmod 600 /etc/ppp/options.l2tpd.client
