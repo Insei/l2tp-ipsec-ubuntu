@@ -20,7 +20,7 @@ conn %default
   ike=aes128-sha1-modp2048!
   esp=aes128-sha1-modp1024!
  
-conn conn-ipsec
+conn myvpn
   keyexchange=ikev1
   #auto=add
   authby=secret
