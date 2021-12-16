@@ -15,7 +15,6 @@ config setup
 # Add connections here.
 
 # Sample VPN connections
-
 conn %default
   ikelifetime=60m
   keylife=20m
@@ -31,10 +30,14 @@ conn myvpn
   left=%defaultroute
   auto=add
   authby=secret
+  rekey=no
   type=transport
+  left=%any
   leftprotoport=17/1701
   rightprotoport=17/1701
   right=$VPN_SERVER_IP
+  rightid=%any
+  dpdaction=clear
 EOF
 
 cat > /etc/ipsec.secrets <<EOF
@@ -58,6 +61,8 @@ ipcp-accept-local
 ipcp-accept-remote
 refuse-eap
 require-chap
+require-mschap
+require-mschap-v2
 noccp
 noauth
 mtu 1280
