@@ -9,42 +9,27 @@ cat > /etc/ipsec.conf <<EOF
 # basic configuration
 
 config setup
-  # strictcrlpolicy=yes
-  # uniqueids = no
 
-# Add connections here.
-
-# Sample VPN connections
 conn %default
-  ikelifetime=60m
-  keylife=20m
-  rekeymargin=3m
-  keyingtries=1
-  keyexchange=ikev1
-  authby=secret
-  ike=aes128-sha1-modp1024,3des-sha1-modp1024!
-  esp=aes128-sha1-modp1024,3des-sha1-modp1024!
-
-conn ipsec-my
-  ikelifetime=60m
-  keylife=20m
-  rekeymargin=3m
+  lifetime=1h
+  margintime=9m
+  rekeyfuzz = 100%
   keyingtries=1
   keyexchange=ikev1
   authby=secret
   ike=aes128-sha1-modp2048!
-  esp=aes128-sha1-modp2048!
-
-conn myvpn
+  esp=aes128-sha1-modp1024!
+ 
+conn conn-ipsec
   keyexchange=ikev1
-  left=%defaultroute
-  auto=add
+  #auto=add
   authby=secret
   type=transport
   leftprotoport=17/1701
   rightprotoport=17/1701
-  right=$VPN_SERVER_IP
-  rightid=10.10.77.2
+  right="$VPN_SERVER_IP"
+  auto=route
+  dpdaction=restart
 EOF
 
 cat > /etc/ipsec.secrets <<EOF
@@ -57,10 +42,13 @@ chmod 600 /etc/ipsec.secrets
 
 cat > /etc/xl2tpd/xl2tpd.conf <<EOF
 [lac myl2tp]
-lns = $VPN_SERVER_IP
+lns = "$VPN_SERVER_IP"
 ppp debug = yes
 pppoptfile = /etc/ppp/options.l2tpd.client
 length bit = yes
+redial = yes
+redial timeout = 10
+autodial = yes
 EOF
 
 cat > /etc/ppp/options.l2tpd.client <<EOF
@@ -70,15 +58,9 @@ refuse-eap
 require-mschap-v2
 noccp
 noauth
-#idle 1800
-mtu 1460
-mru 1460
-#defaultroute
-usepeerdns
-lock
-persist
-maxfail 10
-holdoff 15 #интервал между подключениями
+mtu 1450
+mru 1450
+noipdefault
 connect-delay 5000
 name $VPN_USER
 password $VPN_PASSWORD
