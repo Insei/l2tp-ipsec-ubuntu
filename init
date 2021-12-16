@@ -43,8 +43,8 @@ conn myvpn
   type=transport
   leftprotoport=17/1701
   rightprotoport=17/1701
-  right=$VPN_SERVER_IP  - # address of VPN-server
-  rightid=10.10.77.2 # without this option you will get error RightID mismatch
+  right=$VPN_SERVER_IP
+  rightid=10.10.77.2
 EOF
 
 cat > /etc/ipsec.secrets <<EOF
