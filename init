@@ -25,23 +25,30 @@ conn %default
   ike=aes128-sha1-modp1024,3des-sha1-modp1024!
   esp=aes128-sha1-modp1024,3des-sha1-modp1024!
 
+conn ipsec-my
+  ikelifetime=60m
+  keylife=20m
+  rekeymargin=3m
+  keyingtries=1
+  keyexchange=ikev1
+  authby=secret
+  ike=aes128-sha1-modp2048!
+  esp=aes128-sha1-modp2048!
+
 conn myvpn
   keyexchange=ikev1
   left=%defaultroute
   auto=add
   authby=secret
-  rekey=no
   type=transport
-  left=%any
   leftprotoport=17/1701
   rightprotoport=17/1701
-  right=$VPN_SERVER_IP
-  rightid=%any
-  dpdaction=clear
+  right=$VPN_SERVER_IP  - # address of VPN-server
+  rightid=10.10.77.2 # without this option you will get error RightID mismatch
 EOF
 
 cat > /etc/ipsec.secrets <<EOF
-: PSK "$VPN_IPSEC_PSK"
+%any $VPN_SERVER_IP : PSK "$VPN_IPSEC_PSK"
 EOF
 
 chmod 600 /etc/ipsec.secrets
@@ -49,12 +56,8 @@ chmod 600 /etc/ipsec.secrets
 
 
 cat > /etc/xl2tpd/xl2tpd.conf <<EOF
-[lac myvpn]
+[lac myl2tp]
 lns = $VPN_SERVER_IP
-require chap = yes
-refuse pap = yes
-require authentication = yes
-name = $VPN_USER
 ppp debug = yes
 pppoptfile = /etc/ppp/options.l2tpd.client
 length bit = yes
@@ -63,25 +66,22 @@ EOF
 cat > /etc/ppp/options.l2tpd.client <<EOF
 ipcp-accept-local
 ipcp-accept-remote
-require-chap
-#refuse-chap
 refuse-eap
-refuse-pap
-require-mschap
 require-mschap-v2
 noccp
 noauth
-idle 1800
-mtu 1410
-mru 1410
-nodefaultroute
+#idle 1800
+mtu 1460
+mru 1460
+#defaultroute
 usepeerdns
-debug
+lock
+persist
+maxfail 10
+holdoff 15 #интервал между подключениями
 connect-delay 5000
 name $VPN_USER
 password $VPN_PASSWORD
-remotename myvpn
-ipparam myvpn
 EOF
 
 chmod 600 /etc/ppp/options.l2tpd.client
