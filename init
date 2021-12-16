@@ -48,7 +48,7 @@ conn myvpn
 EOF
 
 cat > /etc/ipsec.secrets <<EOF
-%any $VPN_SERVER_IP : PSK "$VPN_IPSEC_PSK"
+ : PSK "$VPN_IPSEC_PSK"
 EOF
 
 chmod 600 /etc/ipsec.secrets
