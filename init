@@ -27,13 +27,13 @@ conn myvpn
   type=transport
   leftprotoport=17/1701
   rightprotoport=17/1701
-  right="$VPN_SERVER_IP"
+  right=$VPN_SERVER_IP
   auto=route
   dpdaction=restart
 EOF
 
 cat > /etc/ipsec.secrets <<EOF
- : PSK "$VPN_IPSEC_PSK"
+ : PSK $VPN_IPSEC_PSK
 EOF
 
 chmod 600 /etc/ipsec.secrets
@@ -42,7 +42,7 @@ chmod 600 /etc/ipsec.secrets
 
 cat > /etc/xl2tpd/xl2tpd.conf <<EOF
 [lac myl2tp]
-lns = "$VPN_SERVER_IP"
+lns = $VPN_SERVER_IP
 ppp debug = yes
 pppoptfile = /etc/ppp/options.l2tpd.client
 length bit = yes
