@@ -27,7 +27,7 @@ conn myvpn
   type=transport
   leftprotoport=17/1701
   rightprotoport=17/1701
-  right=$VPN_SERVER_IP
+  right=77.37.132.73
   auto=route
   dpdaction=restart
 EOF
