@@ -1,7 +1,9 @@
 #!/bin/sh
 
-# apt-get update;
-apt-get -y install strongswan xl2tpd;
+server_ip=$1
+psk=$2
+login=$3
+password=$4
 
 cat > /etc/ipsec.conf <<EOF
 config setup
@@ -22,13 +24,13 @@ conn myvpn
   type=transport
   leftprotoport=17/1701
   rightprotoport=17/1701
-  right=77.37.132.73
+  right=$server_ip
   auto=route
   dpdaction=restart
 EOF
 
 cat > /etc/ipsec.secrets <<EOF
- : PSK OjT7%2fSnh
+ : PSK $psk
 EOF
 
 chmod 600 /etc/ipsec.secrets
@@ -37,7 +39,7 @@ chmod 600 /etc/ipsec.secrets
 
 cat > /etc/xl2tpd/xl2tpd.conf <<EOF
 [lac myvpn]
-lns = 77.37.132.73
+lns = $server_ip
 ppp debug = yes
 pppoptfile = /etc/ppp/options.l2tpd.client
 length bit = yes
@@ -56,8 +58,8 @@ mtu 1450
 mru 1450
 nodefaultroute
 connect-delay 5000
-name ci_cd_l2tp
-password Hu298UHs91Lus8i8Sh
+name $login
+password $password
 remotename myvpn
 ipparam myvpn
 EOF
