@@ -4,30 +4,30 @@
 apt-get -y install strongswan xl2tpd;
 
 cat > /etc/ipsec.conf <<EOF
-# ipsec.conf - strongSwan IPsec configuration file
-
-# basic configuration
-
 config setup
 
 conn %default
-  lifetime=1h
-  margintime=9m
-  rekeyfuzz = 100%
+  ikelifetime=60m
+  keylife=20m
+  rekeymargin=3m
   keyingtries=1
   keyexchange=ikev1
   authby=secret
-  ike=aes128-sha1-modp2048!
-  esp=aes128-sha1-modp1024!
- 
+  ike=aes128-sha1-modp1024,3des-sha1-modp1024!
+  esp=aes128-sha1-modp1024,3des-sha1-modp1024!
+
 conn myvpn
   keyexchange=ikev1
   left=%defaultroute
   auto=add
   authby=secret
+  rekey=no
   type=transport
+  left=%any
   leftprotoport=17/1701
   rightprotoport=17/1701
+  rightid=%any
+  dpdaction=clear
   right=77.37.132.73
   dpdaction=restart
 EOF
@@ -41,27 +41,37 @@ chmod 600 /etc/ipsec.secrets
 
 
 cat > /etc/xl2tpd/xl2tpd.conf <<EOF
-[lac myl2tp]
-lns = $VPN_SERVER_IP
+[lac myvpn]
+lns = 77.37.132.73
+require chap = yes
+refuse pap = yes
+require authentication = yes
+name = ci_cd_l2tp
 ppp debug = yes
 pppoptfile = /etc/ppp/options.l2tpd.client
 length bit = yes
-redial = yes
-redial timeout = 10
-autodial = yes
 EOF
 
 cat > /etc/ppp/options.l2tpd.client <<EOF
 ipcp-accept-local
 ipcp-accept-remote
+require-chap
+#refuse-chap
 refuse-eap
+refuse-pap
+require-mschap
 require-mschap-v2
 noccp
 noauth
-mtu 1450
-mru 1450
-noipdefault
+idle 1800
+mtu 1410
+mru 1410
+nodefaultroute
+usepeerdns
+debug
 connect-delay 5000
+remotename myvpn
+ipparam myvpn
 name ci_cd_l2tp
 password Hu298UHs91Lus8i8Sh
 EOF
