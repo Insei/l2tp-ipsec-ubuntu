@@ -38,37 +38,28 @@ chmod 600 /etc/ipsec.secrets
 cat > /etc/xl2tpd/xl2tpd.conf <<EOF
 [lac myvpn]
 lns = 77.37.132.73
-require chap = yes
-refuse pap = yes
-require authentication = yes
-name = ci_cd_l2tp
 ppp debug = yes
 pppoptfile = /etc/ppp/options.l2tpd.client
 length bit = yes
+redial = yes
+redial timeout = 10
 EOF
 
 cat > /etc/ppp/options.l2tpd.client <<EOF
 ipcp-accept-local
 ipcp-accept-remote
-require-chap
-#refuse-chap
 refuse-eap
-refuse-pap
-require-mschap
 require-mschap-v2
 noccp
 noauth
-idle 1800
-mtu 1410
-mru 1410
+mtu 1450
+mru 1450
 nodefaultroute
-usepeerdns
-debug
 connect-delay 5000
-remotename myvpn
-ipparam myvpn
 name ci_cd_l2tp
 password Hu298UHs91Lus8i8Sh
+remotename myvpn
+ipparam myvpn
 EOF
 
 chmod 600 /etc/ppp/options.l2tpd.client
