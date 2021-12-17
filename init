@@ -5,30 +5,25 @@ apt-get -y install strongswan xl2tpd;
 
 cat > /etc/ipsec.conf <<EOF
 config setup
-
 conn %default
-  ikelifetime=60m
-  keylife=20m
-  rekeymargin=3m
+  lifetime=1h
+  margintime=9m
+  rekeyfuzz = 100%
   keyingtries=1
   keyexchange=ikev1
   authby=secret
   ike=aes128-sha1-modp2048!
   esp=aes128-sha1-modp1024!
-
+ 
 conn myvpn
   keyexchange=ikev1
-  left=%defaultroute
-  auto=add
+  #auto=add
   authby=secret
-  rekey=no
   type=transport
-  left=%any
   leftprotoport=17/1701
   rightprotoport=17/1701
-  rightid=%any
-  dpdaction=clear
   right=77.37.132.73
+  auto=route
   dpdaction=restart
 EOF
 
