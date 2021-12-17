@@ -20,6 +20,6 @@ echo $PUBLIC_IP
 route add $VPN_SERVER_IP gw $DEFAULT_ROUTE
 route add $PUBLIC_IP gw $DEFAULT_ROUTE
 
-sleep 5
+until ip -f inet addr show ppp0; do sleep 5; ip a; done
+sleep 20
 route add default dev ppp0
-wget -qO- http://ipv4.icanhazip.com; echo ;
